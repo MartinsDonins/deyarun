@@ -1,0 +1,25 @@
+repos:
+  - repo: local
+    hooks:
+      - id: console-check
+        name: Check for console statements
+        entry: bash -c 'if grep -r "console\.\(log\|debug\|info\)" --include="*.ts" --include="*.tsx" --include="*.js" --include="*.jsx" --exclude-dir=node_modules --exclude-dir=scripts --exclude="productionLogger.ts" --exclude="logger.ts" --exclude="eslint.config.js" --exclude="next.config.js" . ; then echo "❌ SECURITY: Console statements detected! Remove before commit."; exit 1; else echo "✅ No console statements found"; fi'
+        language: system
+        files: \.(ts|tsx|js|jsx)$
+        exclude: ^(scripts/|lib/productionLogger\.ts|lib/logger\.ts|eslint\.config\.js|next\.config\.js)
+        pass_filenames: false
+      
+      - id: eslint-security
+        name: ESLint Security Check
+        entry: npx eslint --fix
+        language: node
+        files: \.(ts|tsx|js|jsx)$
+        exclude: ^(node_modules/|scripts/|\.next/)
+        types: [file]
+        
+      - id: no-hardcoded-secrets
+        name: Check for hardcoded secrets
+        entry: bash -c 'if grep -r -i "password\s*=\|apikey\s*=\|secret\s*=\|token\s*=" --include="*.ts" --include="*.tsx" --include="*.js" --include="*.jsx" --exclude-dir=node_modules . ; then echo "❌ SECURITY: Potential hardcoded secrets detected!"; exit 1; else echo "✅ No hardcoded secrets found"; fi'
+        language: system
+        files: \.(ts|tsx|js|jsx)$
+        pass_filenames: false

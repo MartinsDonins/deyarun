@@ -1,0 +1,52 @@
+# Node modules
+node_modules/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Build output
+build/
+dist/
+web-build/
+.next/
+
+# Coverage
+coverage/
+
+# Environment files
+.env
+.env.local
+.env.production
+.env.development
+.env.*.local
+.env.vercel
+!.env.example
+!.env.local.example
+
+# Firebase configuration (sensitive data)
+lib/firebase.config.ts
+config/firebase.config.ts
+firebase.config.ts
+
+# Next.js build output
+.next/
+out/
+
+# Vercel deployment files
+.vercel
+
+# Temporary files
+.tmp/
+temp/
+
+# OS files
+.DS_Store
+
+# IDE files
+.vscode/
+.idea/
+
+# Sentry Config File
+.env.sentry-build-plugin

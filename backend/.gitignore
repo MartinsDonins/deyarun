@@ -1,0 +1,35 @@
+# Node modules
+node_modules/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Runtime data
+pids
+
+# Build output
+dist/
+
+# Coverage
+coverage/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# Backend environment files (Railway specific)
+env-Railway
+env-Railway-Complete
+env-Railway-v2-MongoDB
+
+# Firebase service account keys
+running-academy-*.json
+firebase-service-account*.json
+
+# Prisma generated files
+prisma/dev.db
+

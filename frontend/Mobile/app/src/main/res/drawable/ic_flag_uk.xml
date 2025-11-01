@@ -1,0 +1,43 @@
+<!-- UK Flag Vector Drawable (Union Jack simplified) -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+
+    <!-- Blue background -->
+    <path
+        android:fillColor="#012169"
+        android:pathData="M2,4 L22,4 L22,20 L2,20 Z" />
+
+    <!-- White diagonals (St Patrick's saltire) -->
+    <path
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="3"
+        android:pathData="M2,4 L22,20 M22,4 L2,20" />
+
+    <!-- Red diagonals (St Patrick's saltire) -->
+    <path
+        android:strokeColor="#C8102E"
+        android:strokeWidth="1.5"
+        android:pathData="M2,4 L22,20 M22,4 L2,20" />
+
+    <!-- White cross (St George's Cross) -->
+    <path
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="4"
+        android:pathData="M12,4 L12,20 M2,12 L22,12" />
+
+    <!-- Red cross (St George's Cross) -->
+    <path
+        android:strokeColor="#C8102E"
+        android:strokeWidth="2.5"
+        android:pathData="M12,4 L12,20 M2,12 L22,12" />
+
+    <!-- Border -->
+    <path
+        android:strokeColor="#CCCCCC"
+        android:strokeWidth="0.5"
+        android:fillColor="@android:color/transparent"
+        android:pathData="M2,4 L22,4 L22,20 L2,20 Z" />
+</vector>

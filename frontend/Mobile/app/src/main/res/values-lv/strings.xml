@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">DeyaRun</string>
+    <string name="app_version">1.17.97</string>
+    <string name="version_code">313</string>
+
+    <!-- Autentifikācija -->
+    <string name="login_title">Laipni lūdzam DeyaRun</string>
+    <string name="login_email_hint">E-pasts</string>
+    <string name="login_password_hint">Parole</string>
+    <string name="login_button">Pieteikties</string>
+    <string name="login_error">Pieteikšanās neizdevās. Lūdzu pārbaudi savus datus.</string>
+    <string name="signup_title">Izveidot kontu</string>
+    <string name="signup_button">Reģistrēties</string>
+    <string name="forgot_password">Aizmirsi paroli?</string>
+
+    <!-- Navigācija -->
+    <string name="main_dashboard">Galvenā panelis</string>
+    <string name="nav_workout">Treniņi</string>
+    <string name="nav_statistics">Statistika</string>
+    <string name="nav_profile">Profils</string>
+    <string name="nav_weekly_program">Nedēļas programma</string>
+
+    <!-- Profils un iestatījumi -->
+    <string name="profile">Profils</string>
+    <string name="edit_profile">Rediģēt profilu</string>
+    <string name="first_name">Vārds</string>
+    <string name="last_name">Uzvārds</string>
+    <string name="email">E-pasts</string>
+    <string name="save">Saglabāt</string>
+    <string name="logout">Iziet</string>
+    <string name="settings">Iestatījumi</string>
+
+    <!-- Valodas iestatījumi -->
+    <string name="language_settings">Valodas iestatījumi</string>
+    <string name="language_selection">Izvēlēties valodu</string>
+    <string name="language_lv">Latviešu</string>
+    <string name="language_en">Angļu</string>
+    <string name="language_current">Pašreizējā valoda</string>
+    <string name="language_change_success">Valoda veiksmīgi nomainīta</string>
+    <string name="language_restart_required">Lūdzu restartē aplikāciju lai piemērotu valodas maiņu</string>
+
+    <!-- Integrācijas -->
+    <string name="integrations_settings">Integrācijas un iestatījumi</string>
+    <string name="strava_integration">Strava integrācija</string>
+    <string name="strava_description">Sinhronizē aktivitātes ar Strava</string>
+    <string name="googlefit_integration">Google Fit integrācija</string>
+    <string name="googlefit_description">Sinhronizē veselības datus</string>
+    <string name="gdpr_settings">GDPR iestatījumi</string>
+    <string name="gdpr_description">Datu privātuma iestatījumi</string>
+    <string name="about_app">Par aplikāciju</string>
+    <string name="about_description">Versija un debug informācija</string>
+
+    <!-- Atļaujas -->
+    <string name="permissions_title">Lietotnes atļaujas</string>
+    <string name="permissions_all_granted">Visas nepieciešamās atļaujas piešķirtas</string>
+    <string name="permissions_missing">Trūkst %1$d atļaujas</string>
+    <string name="permissions_grant">Piešķirt</string>
+    <string name="permissions_manage">Pārvaldīt</string>
+    <string name="permissions_open_settings">Atvērt sistēmas iestatījumus</string>
+
+    <!-- Aktivitāšu izsekošana -->
+    <string name="activity_start">Sākt aktivitāti</string>
+    <string name="activity_pause">Pauze</string>
+    <string name="activity_resume">Turpināt</string>
+    <string name="activity_stop">Beigt</string>
+    <string name="activity_distance">Attālums</string>
+    <string name="activity_duration">Ilgums</string>
+    <string name="activity_pace">Temps</string>
+    <string name="activity_calories">Kalorijas</string>
+
+    <!-- Galvenais panelis -->
+    <string name="dashboard_welcome">Sveiks, %1$s!</string>
+    <string name="dashboard_weekly_stats">Nedēļas statistika</string>
+    <string name="dashboard_quick_actions">Ātrās darbības</string>
+    <string name="dashboard_start_run">Sākt skrējienu</string>
+    <string name="dashboard_view_stats">Skatīt statistiku</string>
+    <string name="dashboard_recent_activities">Pēdējās aktivitātes</string>
+
+    <!-- Statistika -->
+    <string name="stats_total_distance">Kopējais attālums</string>
+    <string name="stats_total_time">Kopējais laiks</string>
+    <string name="stats_avg_pace">Vidējais temps</string>
+    <string name="stats_total_runs">Kopā skrējieni</string>
+
+    <!-- Vispārīgi -->
+    <string name="loading">Ielādē...</string>
+    <string name="error">Kļūda</string>
+    <string name="network_error">Tīkla kļūda. Lūdzu pārbaudi savienojumu.</string>
+    <string name="ok">Labi</string>
+    <string name="cancel">Atcelt</string>
+    <string name="yes">Jā</string>
+    <string name="no">Nē</string>
+    <string name="back">Atpakaļ</string>
+    <string name="close">Aizvērt</string>
+    <string name="delete">Dzēst</string>
+    <string name="retry">Mēģināt vēlreiz</string>
+</resources>

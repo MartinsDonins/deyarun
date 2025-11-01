@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Generate Favicons for DeyaRun</title>
+</head>
+<body>
+    <h1>RunAcademy Favicon Generator</h1>
+    <p>This page generates favicon images for RunAcademy using canvas.</p>
+    
+    <div>
+        <h2>Generated Favicons:</h2>
+        <canvas id="canvas16" width="16" height="16"></canvas>
+        <canvas id="canvas32" width="32" height="32"></canvas>
+        <canvas id="canvas180" width="180" height="180"></canvas>
+        <canvas id="canvas512" width="512" height="512"></canvas>
+    </div>
+    
+    <div style="margin-top: 20px;">
+        <button onclick="downloadAll()">Download All Favicons</button>
+    </div>
+
+    <script>
+        function drawLogo(canvas, size) {
+            const ctx = canvas.getContext('2d');
+            
+            // Background - coral gradient
+            const gradient = ctx.createLinearGradient(0, 0, size, size);
+            gradient.addColorStop(0, '#FF6B47');
+            gradient.addColorStop(1, '#FF8C6B');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, size, size);
+            
+            // Draw "R" letter
+            ctx.fillStyle = 'white';
+            ctx.font = `bold ${size * 0.7}px Arial`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('R', size / 2, size / 2);
+        }
+        
+        // Generate all sizes
+        drawLogo(document.getElementById('canvas16'), 16);
+        drawLogo(document.getElementById('canvas32'), 32);
+        drawLogo(document.getElementById('canvas180'), 180);
+        drawLogo(document.getElementById('canvas512'), 512);
+        
+        function downloadCanvas(canvas, filename) {
+            canvas.toBlob(function(blob) {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            });
+        }
+        
+        function downloadAll() {
+            downloadCanvas(document.getElementById('canvas16'), 'favicon-16x16.png');
+            downloadCanvas(document.getElementById('canvas32'), 'favicon-32x32.png');
+            downloadCanvas(document.getElementById('canvas180'), 'apple-touch-icon.png');
+            downloadCanvas(document.getElementById('canvas512'), 'icon-512x512.png');
+            
+            // Note: For favicon.ico, you'll need to convert one of these PNGs
+            alert('PNG files will be downloaded. Use an online converter to create favicon.ico from favicon-32x32.png');
+        }
+    </script>
+</body>
+</html>

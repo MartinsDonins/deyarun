@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">DeyaRun</string>
+    <string name="app_version">1.17.97</string>
+    <string name="version_code">313</string>
+
+    <!-- Authentication -->
+    <string name="login_title">Welcome to DeyaRun</string>
+    <string name="login_email_hint">Email</string>
+    <string name="login_password_hint">Password</string>
+    <string name="login_button">Login</string>
+    <string name="login_error">Login failed. Please check your credentials.</string>
+    <string name="signup_title">Create Account</string>
+    <string name="signup_button">Sign Up</string>
+    <string name="forgot_password">Forgot Password?</string>
+
+    <!-- Navigation -->
+    <string name="main_dashboard">Dashboard</string>
+    <string name="nav_workout">Workout</string>
+    <string name="nav_statistics">Statistics</string>
+    <string name="nav_profile">Profile</string>
+    <string name="nav_weekly_program">Weekly Program</string>
+
+    <!-- Profile & Settings -->
+    <string name="profile">Profile</string>
+    <string name="edit_profile">Edit Profile</string>
+    <string name="first_name">First Name</string>
+    <string name="last_name">Last Name</string>
+    <string name="email">Email</string>
+    <string name="save">Save</string>
+    <string name="logout">Logout</string>
+    <string name="settings">Settings</string>
+
+    <!-- Language Settings -->
+    <string name="language_settings">Language Settings</string>
+    <string name="language_selection">Select Language</string>
+    <string name="language_lv">Latvian</string>
+    <string name="language_en">English</string>
+    <string name="language_current">Current Language</string>
+    <string name="language_change_success">Language changed successfully</string>
+    <string name="language_restart_required">Please restart app to apply language change</string>
+
+    <!-- Integrations -->
+    <string name="integrations_settings">Integrations &amp; Settings</string>
+    <string name="strava_integration">Strava Integration</string>
+    <string name="strava_description">Sync activities with Strava</string>
+    <string name="googlefit_integration">Google Fit Integration</string>
+    <string name="googlefit_description">Sync health data</string>
+    <string name="gdpr_settings">GDPR Settings</string>
+    <string name="gdpr_description">Data privacy settings</string>
+    <string name="about_app">About</string>
+    <string name="about_description">Version and debug information</string>
+
+    <!-- Permissions -->
+    <string name="permissions_title">App Permissions</string>
+    <string name="permissions_all_granted">All required permissions granted</string>
+    <string name="permissions_missing">Missing %1$d permissions</string>
+    <string name="permissions_grant">Grant</string>
+    <string name="permissions_manage">Manage</string>
+    <string name="permissions_open_settings">Open system settings</string>
+
+    <!-- Activity Tracking -->
+    <string name="activity_start">Start Activity</string>
+    <string name="activity_pause">Pause</string>
+    <string name="activity_resume">Resume</string>
+    <string name="activity_stop">Stop</string>
+    <string name="activity_distance">Distance</string>
+    <string name="activity_duration">Duration</string>
+    <string name="activity_pace">Pace</string>
+    <string name="activity_calories">Calories</string>
+
+    <!-- Dashboard -->
+    <string name="dashboard_welcome">Welcome, %1$s!</string>
+    <string name="dashboard_weekly_stats">Weekly Stats</string>
+    <string name="dashboard_quick_actions">Quick Actions</string>
+    <string name="dashboard_start_run">Start Run</string>
+    <string name="dashboard_view_stats">View Stats</string>
+    <string name="dashboard_recent_activities">Recent Activities</string>
+
+    <!-- Statistics -->
+    <string name="stats_total_distance">Total Distance</string>
+    <string name="stats_total_time">Total Time</string>
+    <string name="stats_avg_pace">Average Pace</string>
+    <string name="stats_total_runs">Total Runs</string>
+
+    <!-- Common -->
+    <string name="loading">Loading...</string>
+    <string name="error">Error</string>
+    <string name="network_error">Network error. Please check your connection.</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="back">Back</string>
+    <string name="close">Close</string>
+    <string name="delete">Delete</string>
+    <string name="retry">Retry</string>
+</resources>

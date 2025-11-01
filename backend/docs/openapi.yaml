@@ -1,0 +1,713 @@
+openapi: 3.0.3
+info:
+  title: Running Academy API
+  description: |
+    Comprehensive API for the Running Academy fitness tracking application.
+
+    ## Features
+    - User authentication and profile management
+    - Real-time workout tracking with GPS
+    - Social features and leaderboards
+    - Personalized coaching tips
+    - Device integration and notifications
+
+    ## Authentication
+    Most endpoints require JWT Bearer token authentication.
+
+    ## Base URL
+    - Development: `http://localhost:3001`
+    - Production: `https://api.runningacademy.com`
+  version: 1.0.0
+  contact:
+    name: Running Academy Team
+    email: api@runningacademy.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: http://localhost:3001
+    description: Development server
+  - url: https://api.runningacademy.com
+    description: Production server
+
+security:
+  - BearerAuth: []
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique user identifier
+        email:
+          type: string
+          format: email
+        firstName:
+          type: string
+        lastName:
+          type: string
+        birthDate:
+          type: string
+          format: date
+        gender:
+          type: string
+          enum: [male, female, other]
+        weight:
+          type: number
+          description: Weight in kg
+        height:
+          type: number
+          description: Height in cm
+        fitnessLevel:
+          type: string
+          enum: [beginner, intermediate, advanced]
+        weeklyGoal:
+          type: integer
+          description: Weekly distance goal in km
+
+    Workout:
+      type: object
+      properties:
+        id:
+          type: string
+        userId:
+          type: string
+        name:
+          type: string
+        type:
+          type: string
+          enum: [running, walking, cycling, hiking, other]
+        status:
+          type: string
+          enum: [planned, in_progress, paused, completed, cancelled]
+        startedAt:
+          type: string
+          format: date-time
+        finishedAt:
+          type: string
+          format: date-time
+        distance:
+          type: number
+          description: Distance in meters
+        duration:
+          type: number
+          description: Duration in seconds
+        averagePace:
+          type: number
+          description: Average pace in min/km
+        calories:
+          type: integer
+
+    Error:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        message:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+
+paths:
+  /health:
+    get:
+      tags: [System]
+      summary: Health check
+      description: Check API and database health status
+      security: []
+      responses:
+        "200":
+          description: System is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: OK
+                  databases:
+                    type: object
+                    properties:
+                      postgresql:
+                        type: object
+                        properties:
+                          status:
+                            type: string
+                            example: connected
+                      mongodb:
+                        type: object
+                        properties:
+                          status:
+                            type: string
+                            example: connected
+
+  /api/docs:
+    get:
+      tags: [System]
+      summary: API documentation
+      description: Get API endpoints documentation
+      security: []
+      responses:
+        "200":
+          description: API documentation
+
+  /api/auth/register:
+    post:
+      tags: [Authentication]
+      summary: Register new user
+      description: Create a new user account
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                [firstName, lastName, email, password, birthDate, gender]
+              properties:
+                firstName:
+                  type: string
+                  example: John
+                lastName:
+                  type: string
+                  example: Runner
+                email:
+                  type: string
+                  format: email
+                  example: john@example.com
+                password:
+                  type: string
+                  minLength: 8
+                  example: password123
+                birthDate:
+                  type: string
+                  format: date
+                  example: 1990-01-01
+                gender:
+                  type: string
+                  enum: [male, female, other]
+                  example: male
+                weight:
+                  type: number
+                  example: 70
+                height:
+                  type: number
+                  example: 175
+                fitnessLevel:
+                  type: string
+                  enum: [beginner, intermediate, advanced]
+                  example: intermediate
+      responses:
+        "201":
+          description: User registered successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Registration successful
+                  token:
+                    type: string
+                  user:
+                    $ref: "#/components/schemas/User"
+        "400":
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: User already exists
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /api/auth/login:
+    post:
+      tags: [Authentication]
+      summary: User login
+      description: Authenticate user and return JWT token
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: john@example.com
+                password:
+                  type: string
+                  example: password123
+      responses:
+        "200":
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  token:
+                    type: string
+                  user:
+                    $ref: "#/components/schemas/User"
+        "401":
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /api/auth/me:
+    get:
+      tags: [Authentication]
+      summary: Get current user
+      description: Get authenticated user's profile
+      responses:
+        "200":
+          description: User profile
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  user:
+                    $ref: "#/components/schemas/User"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+    put:
+      tags: [Authentication]
+      summary: Update user profile
+      description: Update authenticated user's profile information
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                firstName:
+                  type: string
+                lastName:
+                  type: string
+                weight:
+                  type: number
+                height:
+                  type: number
+                fitnessLevel:
+                  type: string
+                  enum: [beginner, intermediate, advanced]
+                weeklyGoal:
+                  type: integer
+                timezone:
+                  type: string
+      responses:
+        "200":
+          description: Profile updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  user:
+                    $ref: "#/components/schemas/User"
+
+  /api/workouts/start:
+    post:
+      tags: [Workouts]
+      summary: Start new workout
+      description: Create and start a new workout session
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [type]
+              properties:
+                type:
+                  type: string
+                  enum: [running, walking, cycling, hiking, other]
+                  example: running
+                name:
+                  type: string
+                  example: Morning Run
+                targetDistance:
+                  type: number
+                  description: Target distance in meters
+                  example: 5000
+                targetDuration:
+                  type: number
+                  description: Target duration in seconds
+                  example: 1800
+      responses:
+        "201":
+          description: Workout started successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  workout:
+                    $ref: "#/components/schemas/Workout"
+
+  /api/workouts/{workoutId}/gps:
+    post:
+      tags: [Workouts]
+      summary: Add GPS point
+      description: Add GPS tracking data to an active workout
+      parameters:
+        - name: workoutId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [latitude, longitude, timestamp, elapsedTime]
+              properties:
+                latitude:
+                  type: number
+                  format: float
+                  example: 56.9496
+                longitude:
+                  type: number
+                  format: float
+                  example: 24.1052
+                altitude:
+                  type: number
+                  example: 10
+                accuracy:
+                  type: number
+                  example: 5
+                speed:
+                  type: number
+                  example: 3.5
+                heading:
+                  type: number
+                  example: 180
+                timestamp:
+                  type: string
+                  format: date-time
+                elapsedTime:
+                  type: number
+                  description: Seconds since workout start
+                  example: 30
+                heartRate:
+                  type: integer
+                  example: 150
+                distance:
+                  type: number
+                  description: Cumulative distance in meters
+                  example: 100
+      responses:
+        "200":
+          description: GPS point saved successfully
+
+  /api/workouts/{workoutId}/complete:
+    put:
+      tags: [Workouts]
+      summary: Complete workout
+      description: Mark workout as completed with final metrics
+      parameters:
+        - name: workoutId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                distance:
+                  type: number
+                  description: Total distance in meters
+                  example: 5000
+                duration:
+                  type: number
+                  description: Total duration in seconds
+                  example: 1800
+                averagePace:
+                  type: number
+                  description: Average pace in min/km
+                  example: 6.0
+                bestPace:
+                  type: number
+                  description: Best pace in min/km
+                  example: 5.2
+                calories:
+                  type: integer
+                  example: 350
+                averageHeartRate:
+                  type: integer
+                  example: 155
+                maxHeartRate:
+                  type: integer
+                  example: 175
+                elevationGain:
+                  type: number
+                  example: 50
+                elevationLoss:
+                  type: number
+                  example: 45
+                notes:
+                  type: string
+                  example: Great workout!
+                effortLevel:
+                  type: integer
+                  minimum: 1
+                  maximum: 10
+                  example: 7
+      responses:
+        "200":
+          description: Workout completed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  workout:
+                    $ref: "#/components/schemas/Workout"
+                  achievements:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                        description:
+                          type: string
+                        category:
+                          type: string
+
+  /api/workouts:
+    get:
+      tags: [Workouts]
+      summary: Get workout history
+      description: Get paginated list of user's completed workouts
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 10
+            maximum: 50
+      responses:
+        "200":
+          description: Workout history retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  workouts:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Workout"
+                  pagination:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+                      pages:
+                        type: integer
+                      hasNext:
+                        type: boolean
+                      hasPrev:
+                        type: boolean
+
+  /api/leaderboard/weekly:
+    get:
+      tags: [Leaderboard]
+      summary: Weekly leaderboard
+      description: Get weekly distance leaderboard
+      responses:
+        "200":
+          description: Weekly leaderboard data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  period:
+                    type: string
+                    example: weekly
+                  leaderboard:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        rank:
+                          type: integer
+                        userId:
+                          type: string
+                        name:
+                          type: string
+                        distance:
+                          type: number
+                        workouts:
+                          type: integer
+                        isCurrentUser:
+                          type: boolean
+
+  /api/coach-tips/daily:
+    get:
+      tags: [Coach Tips]
+      summary: Get daily tip
+      description: Get personalized daily coaching tip
+      responses:
+        "200":
+          description: Daily tip retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  tip:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      title:
+                        type: string
+                      content:
+                        type: string
+                      category:
+                        type: string
+                      personalizedFor:
+                        type: string
+                      date:
+                        type: string
+                        format: date
+
+  /api/notifications:
+    get:
+      tags: [Notifications]
+      summary: Get notifications
+      description: Get user's notifications with pagination
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+            maximum: 50
+      responses:
+        "200":
+          description: Notifications retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  notifications:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        type:
+                          type: string
+                          enum: [achievement, goal, reminder, motivation]
+                        title:
+                          type: string
+                        message:
+                          type: string
+                        read:
+                          type: boolean
+                        timestamp:
+                          type: string
+                          format: date-time
+                  unreadCount:
+                    type: integer
+
+tags:
+  - name: System
+    description: System health and documentation
+  - name: Authentication
+    description: User authentication and profile management
+  - name: Workouts
+    description: Workout tracking and management
+  - name: Leaderboard
+    description: Rankings and competitions
+  - name: Coach Tips
+    description: Personalized coaching advice
+  - name: Notifications
+    description: User notifications and preferences
