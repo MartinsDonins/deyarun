@@ -3,6 +3,8 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id("org.jetbrains.kotlin.plugin.serialization")
     id("kotlin-kapt")
+    id("org.jetbrains.kotlin.plugin.compose")
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -13,8 +15,8 @@ android {
         applicationId = "com.deyarun.mobileapp"
         minSdk = 24
         targetSdk = 35
-        versionCode = 406
-        versionName = "1.18.06"
+        versionCode = 407
+        versionName = "1.18.07"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -53,10 +55,6 @@ android {
 
     buildFeatures {
         compose = true
-    }
-
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.8"
     }
 
     packaging {
@@ -119,6 +117,11 @@ dependencies {
 
     // Google Play Services for Location
     implementation("com.google.android.gms:play-services-location:21.0.1")
+
+    // Firebase Authentication + Google Sign-In
+    implementation(platform("com.google.firebase:firebase-bom:33.7.0"))
+    implementation("com.google.firebase:firebase-auth-ktx")
+    implementation("com.google.android.gms:play-services-auth:21.2.0")
 
     // Testing
     testImplementation("junit:junit:4.13.2")

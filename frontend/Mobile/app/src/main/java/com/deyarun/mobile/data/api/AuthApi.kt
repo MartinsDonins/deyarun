@@ -12,13 +12,20 @@ data class LoginResponse(
     val success: Boolean,
     val message: String,
     val user: User? = null,
-    val token: String? = null
+    val token: String? = null,
+    // Firebase auth response uses "msg" instead of "message"
+    val msg: String? = null
 )
 
 data class UserResponse(
     val success: Boolean,
     val message: String,
     val user: User? = null
+)
+
+data class FirebaseAuthRequest(
+    val idToken: String,
+    val provider: String
 )
 
 interface AuthApi {
@@ -37,4 +44,8 @@ interface AuthApi {
 
     @POST("api/auth/forgot-password")
     suspend fun forgotPassword(@Body forgotPasswordRequest: ForgotPasswordRequest): Response<ApiResponse>
+
+    // Firebase auth: Google Sign-In → Firebase ID token → backend JWT
+    @POST("api/auth/firebase")
+    suspend fun firebaseAuth(@Body request: FirebaseAuthRequest): Response<LoginResponse>
 }

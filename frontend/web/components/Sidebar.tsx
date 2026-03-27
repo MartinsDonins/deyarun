@@ -5,8 +5,6 @@ import { useAuth } from '../contexts/AuthContext'
 import { logger } from '../lib/productionLogger'
 import {
   HomeIcon,
-  ChartBarIcon,
-  CalendarIcon,
   CogIcon,
   PlayIcon,
   ArrowLeftOnRectangleIcon,
@@ -14,19 +12,13 @@ import {
   XMarkIcon,
   AcademicCapIcon,
   CreditCardIcon,
-  ExclamationTriangleIcon
 } from '@heroicons/react/24/outline'
 
 const navigation = [
   { name: 'Pārskats', href: '/dashboard', icon: HomeIcon },
   { name: 'Treniņi', href: '/workouts', icon: PlayIcon },
-  { name: 'Kursi', href: '/courses', icon: AcademicCapIcon },
-  // Temporarily disabled analytics section
-  // { name: 'Statistika', href: '/analytics', icon: ChartBarIcon },
-  { name: 'Kalendārs', href: '/calendar', icon: CalendarIcon },
-  { name: 'Strava', href: '/strava', icon: ChartBarIcon },
+  { name: 'Treniņu plāni', href: '/training-plans', icon: AcademicCapIcon },
   { name: 'Abonements', href: '/subscription', icon: CreditCardIcon },
-  { name: 'Ziņot par problēmu', href: '/support', icon: ExclamationTriangleIcon },
   { name: 'Iestatījumi', href: '/settings', icon: CogIcon },
 ]
 

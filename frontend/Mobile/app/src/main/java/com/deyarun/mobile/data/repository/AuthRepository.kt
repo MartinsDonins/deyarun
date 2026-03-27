@@ -3,6 +3,7 @@ package com.deyarun.mobile.data.repository
 import android.content.Context
 import com.deyarun.mobile.data.api.ApiClient
 import com.deyarun.mobile.data.api.AuthApi
+import com.deyarun.mobile.data.api.FirebaseAuthRequest
 import com.deyarun.mobile.data.model.AuthResult
 import com.deyarun.mobile.data.model.LoginRequest
 import com.deyarun.mobile.data.model.SignupRequest
@@ -131,6 +132,39 @@ class AuthRepository(context: Context? = null) {
             AuthResult.Error("Network error. Please check your connection")
         } catch (e: Exception) {
             AuthResult.Error(e.message ?: "Signup failed")
+        }
+    }
+
+    /**
+     * Authenticate with backend using a Firebase ID token (from Google Sign-In).
+     * Backend verifies the token and returns our app JWT.
+     */
+    suspend fun loginWithFirebase(firebaseIdToken: String, provider: String = "google"): AuthResult {
+        return try {
+            val request = FirebaseAuthRequest(idToken = firebaseIdToken, provider = provider)
+            val response = authApi?.firebaseAuth(request)
+
+            if (response?.isSuccessful == true) {
+                val body = response.body()
+                if (body?.success == true && body.user != null && body.token != null) {
+                    tokenManager?.saveToken(body.token)
+                    AuthResult.Success(body.user)
+                } else {
+                    AuthResult.Error(body?.msg ?: body?.message ?: "Google Sign-In failed")
+                }
+            } else {
+                val errorMessage = when (response?.code()) {
+                    401 -> "Google authentication token expired. Please try again."
+                    400 -> "Invalid Google token. Please try again."
+                    500 -> "Server error. Please try again later."
+                    else -> "Google Sign-In failed. Please try again."
+                }
+                AuthResult.Error(errorMessage)
+            }
+        } catch (e: IOException) {
+            AuthResult.Error("Network error. Please check your connection.")
+        } catch (e: Exception) {
+            AuthResult.Error(e.message ?: "Google Sign-In failed")
         }
     }
 

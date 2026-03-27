@@ -119,6 +119,10 @@ class AuthViewModel(
         _authState.value = _authState.value.copy(error = null)
     }
 
+    fun setError(message: String) {
+        _authState.value = _authState.value.copy(isLoading = false, error = message)
+    }
+
     fun signup(firstName: String, lastName: String, username: String, email: String, password: String) {
         viewModelScope.launch {
             _authState.value = _authState.value.copy(isLoading = true, error = null)
@@ -150,6 +154,46 @@ class AuthViewModel(
                     user = null,
                     isLoading = false,
                     error = e.message ?: "Signup failed"
+                )
+            }
+        }
+    }
+
+    /**
+     * Called after GoogleAuthManager.handleSignInResult() returns a Firebase ID token.
+     * Sends the token to backend POST /api/auth/firebase → receives app JWT.
+     */
+    fun loginWithFirebaseToken(firebaseIdToken: String) {
+        viewModelScope.launch {
+            _authState.value = _authState.value.copy(isLoading = true, error = null)
+
+            try {
+                val result = authRepository.loginWithFirebase(firebaseIdToken, provider = "google")
+
+                when (result) {
+                    is AuthResult.Success -> {
+                        _authState.value = _authState.value.copy(
+                            isAuthenticated = true,
+                            user = result.user,
+                            isLoading = false,
+                            error = null
+                        )
+                    }
+                    is AuthResult.Error -> {
+                        _authState.value = _authState.value.copy(
+                            isAuthenticated = false,
+                            user = null,
+                            isLoading = false,
+                            error = result.message
+                        )
+                    }
+                }
+            } catch (e: Exception) {
+                _authState.value = _authState.value.copy(
+                    isAuthenticated = false,
+                    user = null,
+                    isLoading = false,
+                    error = e.message ?: "Google Sign-In failed"
                 )
             }
         }

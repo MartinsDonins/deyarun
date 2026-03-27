@@ -1,5 +1,7 @@
 package com.deyarun.mobile.presentation.auth
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -31,8 +33,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.deyarun.mobile.data.auth.GoogleAuthManager
+import com.deyarun.mobile.data.auth.GoogleSignInResult
 import com.deyarun.mobile.data.repository.AuthRepository
 import com.deyarun.mobile.presentation.viewmodel.AuthViewModel
+import kotlinx.coroutines.launch
 import com.deyarun.mobile.presentation.viewmodel.AuthViewModelFactory
 import com.deyarun.mobile.presentation.theme.DeyaRunColors
 import com.deyarun.mobile.presentation.theme.DeyaRunGradients
@@ -49,6 +54,28 @@ fun LoginScreenNew(
     val authViewModelFactory = AuthViewModelFactory(authRepository)
     val authViewModel: AuthViewModel = viewModel(factory = authViewModelFactory)
     val authState by authViewModel.authState.collectAsState()
+
+    val googleAuthManager = remember { GoogleAuthManager(context) }
+    val coroutineScope = rememberCoroutineScope()
+
+    // Launcher for Google Sign-In intent
+    val googleSignInLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        coroutineScope.launch {
+            when (val signInResult = googleAuthManager.handleSignInResult(result)) {
+                is GoogleSignInResult.Success -> {
+                    authViewModel.loginWithFirebaseToken(signInResult.firebaseIdToken)
+                }
+                is GoogleSignInResult.Error -> {
+                    authViewModel.setError(signInResult.message)
+                }
+                is GoogleSignInResult.Cancelled -> {
+                    // User cancelled — do nothing
+                }
+            }
+        }
+    }
 
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -246,9 +273,11 @@ fun LoginScreenNew(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Google Sign-In Button (placeholder)
+            // Google Sign-In Button
             OutlinedButton(
-                onClick = { /* TODO: Implement Google Sign-In */ },
+                onClick = {
+                    googleSignInLauncher.launch(googleAuthManager.getSignInIntent())
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp),

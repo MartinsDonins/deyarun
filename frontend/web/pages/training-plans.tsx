@@ -64,6 +64,7 @@ function TrainingPlansPage() {
   const [error, setError] = useState<string | null>(null)
   const [weeklyPlanLoading, setWeeklyPlanLoading] = useState(false)
   const [weeklyPlanSuccess, setWeeklyPlanSuccess] = useState(false)
+  const [fitnessLevel, setFitnessLevel] = useState<'beginner' | 'intermediate' | 'advanced'>('beginner')
   const [filters, setFilters] = useState({
     difficulty: 'all' as 'all' | 'beginner' | 'intermediate' | 'advanced',
     targetType: 'all' as 'all' | 'distance' | 'time' | 'strength' | 'mixed',
@@ -175,10 +176,7 @@ function TrainingPlansPage() {
         },
         body: JSON.stringify({
           userPreferences: {
-            trainingDays: ['monday', 'wednesday', 'friday', 'sunday'],
-            fitnessLevel: 'intermediate',
-            weeklyDistanceGoal: 25,
-            timeAvailable: 60
+            fitnessLevel
           }
         })
       })
@@ -366,29 +364,23 @@ function TrainingPlansPage() {
 
           {/* Weekly Plan Generator */}
           <div className="glass-card p-6 bg-gradient-to-r from-orange-500/10 to-purple-600/10 border-orange-500/30">
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+            <h3 className="text-lg font-semibold text-adaptive-white mb-4">Ģenerēt nedēļas plānu</h3>
+            <div className="flex flex-col sm:flex-row items-end gap-4">
               <div className="flex-1">
-                <h3 className="text-lg font-semibold text-adaptive-white mb-2 flex items-center gap-2">
-                  <svg className="w-5 h-5 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-                  </svg>
-                  Nedēļas Treniņplāns
-                </h3>
-                <p className="text-adaptive-light text-sm mb-1">
-                  Ģenerē personalizētu nedēļas treniņprogrammu nākamajai nedēļai
-                </p>
-                <p className="text-adaptive-muted text-xs">
-                  Izmanto profesionālu algoritmu, lai izveidotu optimālu treniņu sadalījumu atbilstoši jūsu līmenim
-                </p>
+                <label className="block text-sm text-adaptive-light mb-1">Fitness līmenis</label>
+                <select
+                  value={fitnessLevel}
+                  onChange={(e) => setFitnessLevel(e.target.value as 'beginner' | 'intermediate' | 'advanced')}
+                  className="glass-input w-full"
+                >
+                  <option value="beginner">Iesācējs</option>
+                  <option value="intermediate">Vidējs</option>
+                  <option value="advanced">Pieredzējis</option>
+                </select>
               </div>
               <div className="flex items-center gap-3">
                 {weeklyPlanSuccess && (
-                  <div className="flex items-center gap-2 text-green-400 text-sm">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
-                    Plāns izveidots!
-                  </div>
+                  <span className="text-green-400 text-sm">Plāns izveidots!</span>
                 )}
                 <button
                   onClick={generateWeeklyPlan}
@@ -400,14 +392,7 @@ function TrainingPlansPage() {
                       <div className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full"></div>
                       Ģenerē...
                     </>
-                  ) : (
-                    <>
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                      </svg>
-                      Ģenerēt plānu
-                    </>
-                  )}
+                  ) : 'Ģenerēt plānu'}
                 </button>
               </div>
             </div>
