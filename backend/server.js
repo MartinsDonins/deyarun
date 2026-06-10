@@ -40,6 +40,7 @@ import leaderboardRoutes from './routes/leaderboard.js';
 import coachTipsRoutes from './routes/coachTips.js';
 import notificationsRoutes from './routes/notifications.js';
 import adminRoutes from './routes/admin.js';
+import adminPaymentRoutes from './routes/adminPayments.js';
 import coursesRoutes from './routes/courses.js';
 import lessonsRoutes from './routes/lessons.js';
 import lessonCommentsRoutes from './routes/lessonComments.js';
@@ -488,6 +489,7 @@ app.use('/api/subscriptions', subscriptionRoutes);
 app.use('/api/leaderboard', leaderboardRoutes);
 app.use('/api/coach-tips', coachTipsRoutes);
 app.use('/api/notifications', notificationsRoutes);
+app.use('/api/admin/payment', adminPaymentRoutes); // EveryPay diagnostics (admin-only) — before broad /api/admin
 app.use('/api/admin', adminRoutes);
 app.use('/api/ai-conversations', aiConversationsRoutes);
 app.use('/api/admin-notifications', adminNotificationsRoutes);

@@ -1,6 +1,6 @@
 {
   "name": "deyarun-backend",
-  "version": "1.17.124",
+  "version": "1.17.125",
   "description": "DeyaRun Backend - MongoDB + Firebase Architecture",
   "main": "server.js",
   "type": "module",

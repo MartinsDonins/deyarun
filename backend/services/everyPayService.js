@@ -447,6 +447,196 @@ class EveryPayService {
   isConfigured() {
     return !!(this.apiUser && this.apiKey && this.accountName);
   }
+
+  // =====================================================================
+  // ADMIN DIAGNOSTICS — EveryPay API v4 (HTTP Basic Auth + JSON body)
+  // NOTE: v4 uses Basic Auth (api_username:secret), NOT the HMAC query
+  // signing used by the legacy methods above. These methods are the
+  // correct v4 contract and are used by the admin diagnostics panel.
+  // =====================================================================
+
+  // Detect whether the configured gateway is the demo/test environment.
+  isTestEnvironment() {
+    return /demo|sandbox|test/i.test(this.baseURL || '');
+  }
+
+  // Normalize the configured base URL down to the API host root, stripping
+  // common mistakes: the customer landing-page path (/lp), an explicit API
+  // version path (/api/v3, /api/v4), and trailing slashes. The v4 paths are
+  // appended by the callers, so baseURL must be host-only.
+  // e.g. "https://payment.ecommerce.sebgroup.com/lp" -> "https://payment.ecommerce.sebgroup.com"
+  _apiRoot() {
+    return (this.baseURL || '')
+      .replace(/\/+$/, '')
+      .replace(/\/lp$/i, '')
+      .replace(/\/api\/v[0-9]+$/i, '')
+      .replace(/\/+$/, '');
+  }
+
+  // Build an axios client that follows the EveryPay v4 contract.
+  // validateStatus is permissive so callers can inspect error bodies.
+  _v4Client() {
+    return axios.create({
+      baseURL: this._apiRoot(),
+      timeout: 15000,
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      auth: { username: this.apiUser, password: this.apiKey },
+      validateStatus: () => true
+    });
+  }
+
+  // Configuration snapshot for the admin panel. Never returns secrets.
+  getDiagnostics() {
+    const maskedUser = this.apiUser
+      ? `${this.apiUser.slice(0, 3)}***${this.apiUser.slice(-2)}`
+      : null;
+
+    // Surface common misconfigurations of the base URL.
+    const warnings = [];
+    const raw = this.baseURL || '';
+    if (!process.env.EVERYPAY_BASE_URL) {
+      warnings.push('EVERYPAY_BASE_URL nav uzstādīts — tiek lietots demo gateway (igw-demo.every-pay.com).');
+    }
+    if (/\/lp\/?$/i.test(raw)) {
+      warnings.push("EVERYPAY_BASE_URL beidzas ar '/lp' — tas ir klienta maksājuma lapas ceļš, ne API bāze. Lieto tikai host (https://payment.ecommerce.sebgroup.com).");
+    }
+    if (/\/api\/v[0-9]+\/?$/i.test(raw)) {
+      warnings.push("EVERYPAY_BASE_URL satur '/api/vX' — noņem to, kods pievieno /api/v4 automātiski.");
+    }
+
+    return {
+      configured: this.isConfigured(),
+      environment: this.isTestEnvironment() ? 'test/demo' : 'production',
+      baseURL: this.baseURL,
+      // The actual host the v4 client will call, after normalization.
+      effectiveApiBase: `${this._apiRoot()}/api/v4`,
+      accountName: this.accountName || null,
+      apiUser: maskedUser,
+      warnings,
+      // Which environment variables are present (booleans only, no values)
+      env: {
+        EVERYPAY_BASE_URL: !!process.env.EVERYPAY_BASE_URL,
+        EVERYPAY_API_USER: !!process.env.EVERYPAY_API_USER,
+        EVERYPAY_API_KEY: !!process.env.EVERYPAY_API_KEY,
+        EVERYPAY_ACCOUNT_NAME: !!process.env.EVERYPAY_ACCOUNT_NAME
+      }
+    };
+  }
+
+  // Verify authenticated connectivity WITHOUT creating a payment.
+  // Strategy: request a non-existent payment reference.
+  //   404 (or 2xx)  -> reachable + credentials accepted
+  //   401 / 403     -> credentials rejected
+  //   network error -> gateway unreachable
+  async testConnection() {
+    if (!this.isConfigured()) {
+      return {
+        ok: false,
+        reason: 'not_configured',
+        message: 'EveryPay credentials missing (EVERYPAY_API_USER / EVERYPAY_API_KEY / EVERYPAY_ACCOUNT_NAME).'
+      };
+    }
+
+    const probeRef = `conn-check-${this.generateNonce()}`;
+    try {
+      const client = this._v4Client();
+      const response = await client.get(`/api/v4/payments/${probeRef}`, {
+        params: { api_username: this.apiUser }
+      });
+
+      let ok = false;
+      let reason = `http_${response.status}`;
+      if (response.status === 404 || (response.status >= 200 && response.status < 300)) {
+        ok = true;
+        reason = 'authenticated';
+      } else if (response.status === 401 || response.status === 403) {
+        ok = false;
+        reason = 'auth_failed';
+      }
+
+      return {
+        ok,
+        reason,
+        httpStatus: response.status,
+        baseURL: this.baseURL,
+        environment: this.isTestEnvironment() ? 'test/demo' : 'production',
+        response: response.data
+      };
+    } catch (error) {
+      return {
+        ok: false,
+        reason: 'network_error',
+        message: error.message,
+        code: error.code || null,
+        baseURL: this.baseURL
+      };
+    }
+  }
+
+  // Create a minimal REAL one-off payment session to validate the full
+  // create flow end-to-end. Returns the payment_link on success, or the
+  // full EveryPay error body on failure (admin-only consumption).
+  // @param amountCents  amount in cents (default 10 = 0.10 EUR)
+  async createTestPayment({ amountCents = 10, customerUrl, customerIp } = {}) {
+    if (!this.isConfigured()) {
+      return {
+        success: false,
+        reason: 'not_configured',
+        message: 'EveryPay credentials missing (EVERYPAY_API_USER / EVERYPAY_API_KEY / EVERYPAY_ACCOUNT_NAME).'
+      };
+    }
+
+    const orderId = `ADMIN-TEST-${Date.now()}`;
+    const payload = {
+      api_username: this.apiUser,
+      account_name: this.accountName,
+      amount: Number((amountCents / 100).toFixed(2)), // v4 expects EUR decimal, e.g. 0.10
+      order_reference: orderId,
+      nonce: this.generateNonce(),
+      timestamp: new Date().toISOString(),
+      customer_url: customerUrl || `${process.env.FRONTEND_URL || 'https://deyarun.com'}/payment/return`,
+      customer_ip: customerIp || '0.0.0.0',
+      locale: 'lv'
+    };
+
+    try {
+      const client = this._v4Client();
+      const response = await client.post('/api/v4/payments/oneoff', payload);
+
+      if (response.status >= 200 && response.status < 300 && response.data?.payment_link) {
+        return {
+          success: true,
+          httpStatus: response.status,
+          orderId,
+          paymentLink: response.data.payment_link,
+          paymentReference: response.data.payment_reference,
+          paymentState: response.data.payment_state,
+          amountEur: payload.amount,
+          environment: this.isTestEnvironment() ? 'test/demo' : 'production'
+        };
+      }
+
+      // Detailed error surfaced to the admin panel only.
+      return {
+        success: false,
+        httpStatus: response.status,
+        orderId,
+        environment: this.isTestEnvironment() ? 'test/demo' : 'production',
+        error: response.data,
+        // Echo request (no secret is ever part of the body) for debugging.
+        sentRequest: { endpoint: '/api/v4/payments/oneoff', payload }
+      };
+    } catch (error) {
+      return {
+        success: false,
+        reason: 'network_error',
+        message: error.message,
+        code: error.code || null,
+        httpStatus: error.response?.status || null,
+        error: error.response?.data || null
+      };
+    }
+  }
 }
 
 export default new EveryPayService();

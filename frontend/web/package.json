@@ -1,6 +1,6 @@
 {
   "name": "deyarun-web",
-  "version": "1.17.117",
+  "version": "1.17.118",
   "private": true,
   "scripts": {
     "dev": "next dev",

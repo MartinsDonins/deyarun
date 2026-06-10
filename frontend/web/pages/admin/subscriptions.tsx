@@ -6,6 +6,7 @@ import SubscriptionDetailsModal from '../../components/subscription/Subscription
 import { apiService } from '../../lib/api'
 import { getAuthToken } from '../../utils/auth'
 import { logger } from '../../lib/productionLogger'
+import PaymentDiagnostics from '../../components/admin/PaymentDiagnostics'
 
 interface PlanFeatures {
   courseAccess?: string
@@ -571,6 +572,9 @@ function AdminSubscriptions() {
   return (
     <AdminLayout title="Abonementu pārvaldība">
       <div className="space-y-6">
+        {/* EveryPay payment diagnostics (admin-only) */}
+        <PaymentDiagnostics />
+
         {/* Header with tabs */}
         <div className="card">
           <div className="flex items-center justify-between mb-6">
