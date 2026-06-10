@@ -4,7 +4,7 @@
 import * as Sentry from "@sentry/nextjs";
 
 Sentry.init({
-  dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
+  dsn: process.env.SENTRY_DSN || process.env.NEXT_PUBLIC_SENTRY_DSN || "https://b9cc4023fe9a4354b20ed2b72405cba3@glitchtip.coredigify.com/16",
   
   // Set tracesSampleRate to 1.0 to capture 100% of transactions for debugging
   // We recommend adjusting this value in production

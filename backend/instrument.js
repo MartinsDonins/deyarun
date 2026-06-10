@@ -3,7 +3,7 @@ import * as Sentry from "@sentry/node";
 import { nodeProfilingIntegration } from "@sentry/profiling-node";
 
 Sentry.init({
-  dsn: process.env.SENTRY_DSN || "https://455b5586426f768f522cb2b63cad1462@o4509779750944768.ingest.de.sentry.io/4509779850887248",
+  dsn: process.env.SENTRY_DSN || "https://38480274b8f04b7487637332f7a19585@glitchtip.coredigify.com/15",
   
   // Tracing - Capture 100% of the transactions in development, 10% in production
   tracesSampleRate: process.env.NODE_ENV === 'production' ? 0.1 : 1.0,
